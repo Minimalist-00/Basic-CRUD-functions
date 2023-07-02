@@ -1,5 +1,7 @@
 package usecase
 
+/* クエストに関連するビジネスロジックを実装する部分 */
+
 import (
 	"bulletin-board-rest-api/model"
 	"bulletin-board-rest-api/repository"

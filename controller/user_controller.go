@@ -1,5 +1,7 @@
 package controller
 
+/* リクエストの受け付けとレスポンスの生成 */
+
 import (
 	"bulletin-board-rest-api/model"
 	"bulletin-board-rest-api/usecase"

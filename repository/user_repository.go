@@ -1,5 +1,7 @@
 package repository
 
+/* データベース操作 */
+
 import (
 	"bulletin-board-rest-api/model"
 

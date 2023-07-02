@@ -1,5 +1,12 @@
 package router
 
+/*
+ルーティングとコントローラの結びつけ
+ 1. エンドポイントの設定
+ 2. ミドルウェアの設定
+ 3. コントローラとの結びつけ
+*/
+
 import (
 	"bulletin-board-rest-api/controller"
 	"net/http"
@@ -10,7 +17,7 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 )
 
-func NewRouter(uc controller.IUserController, tc controller.ITaskController) *echo.Echo {
+func NewRouter(uc controller.IUserController, qc controller.IQuestController) *echo.Echo {
 	// ログイン関係のエンドポイントにの設定
 	e := echo.New()
 	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{ // CORSのミドルウェアの設定
@@ -33,17 +40,17 @@ func NewRouter(uc controller.IUserController, tc controller.ITaskController) *ec
 	e.POST("/login", uc.LogIn)
 	e.POST("/logout", uc.LogOut)
 	e.GET("/csrf", uc.CsrfToken)
-	t := e.Group("/tasks") // タスク関係のエンドポイントのグループ化
+	t := e.Group("/quests") // クエスト関係のエンドポイントのグループ化
 	// ミドルウェアの設定
 	t.Use(echojwt.WithConfig(echojwt.Config{ //エンドポイントにミドルウェアの追加
 		SigningKey:  []byte(os.Getenv("SECRET")), // 環境変数からシークレットキーを取得
 		TokenLookup: "cookie:token",              // cookieからトークンを取得
 	}))
-	// タスク関係のエンドポイントの設定
-	t.GET("", tc.GetAllTasks)
-	t.GET("/:taskId", tc.GetTaskById)
-	t.POST("", tc.CreateTask)
-	t.PUT("/:taskId", tc.UpdateTask)
-	t.DELETE("/:taskId", tc.DeleteTask)
+	// クエスト関係のエンドポイントの設定
+	t.GET("", qc.GetAllQuests)
+	t.GET("/:questId", qc.GetQuestById)
+	t.POST("", qc.CreateQuest)
+	t.PUT("/:questId", qc.UpdateQuest)
+	t.DELETE("/:questId", qc.DeleteQuest)
 	return e
 }

@@ -1,5 +1,7 @@
 package db
 
+/* データベースへの接続と切断を管理する */
+
 import (
 	"fmt"
 	"log"
