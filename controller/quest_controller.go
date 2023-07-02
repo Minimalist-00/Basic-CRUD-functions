@@ -13,7 +13,7 @@ import (
 )
 
 type IQuestController interface {
-	GetAllQuests(c echo.Context) error
+	GetUserQuests(c echo.Context) error
 	GetQuestById(c echo.Context) error
 	CreateQuest(c echo.Context) error
 	UpdateQuest(c echo.Context) error
@@ -30,14 +30,14 @@ func NewQuestController(qu usecase.IQuestUsecase) IQuestController {
 	return &questController{qu}
 }
 
-func (qc *questController) GetAllQuests(c echo.Context) error {
+func (qc *questController) GetUserQuests(c echo.Context) error {
 	// JWTのclaimsからユーザーIDを取得
 	user := c.Get("user").(*jwt.Token) // jwtをデコードした内容を取得
 	claims := user.Claims.(jwt.MapClaims)
 	userId := claims["user_id"]
 
 	// ユーザーIDを元にクエストを取得
-	questsRes, err := qc.qu.GetAllQuests(uint(userId.(float64)))
+	questsRes, err := qc.qu.GetUserQuests(uint(userId.(float64)))
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, err.Error())
 	}

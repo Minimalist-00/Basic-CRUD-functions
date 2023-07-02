@@ -9,7 +9,7 @@ import (
 )
 
 type IQuestUsecase interface {
-	GetAllQuests(userId uint) ([]model.QuestResponse, error)
+	GetUserQuests(userId uint) ([]model.QuestResponse, error)
 	GetQuestById(userId uint, questId uint) (model.QuestResponse, error)
 	CreateQuest(quest model.Quest) (model.QuestResponse, error)
 	UpdateQuest(quest model.Quest, userId uint, questId uint) (model.QuestResponse, error)
@@ -26,9 +26,9 @@ func NewQuestUsecase(qr repository.IQuestRepository, qv validator.IQuestValidato
 	return &questUsecase{qr, qv}
 }
 
-func (qu *questUsecase) GetAllQuests(userId uint) ([]model.QuestResponse, error) {
-	quests := []model.Quest{}                                         //Questの配列（スライス）を作成
-	if err := qu.qr.GetAllQuestsFromDB(&quests, userId); err != nil { //questRepositoryのGetAllQuestsFromDBを呼び出す -> questsに格納
+func (qu *questUsecase) GetUserQuests(userId uint) ([]model.QuestResponse, error) {
+	quests := []model.Quest{}                                          //Questの配列（スライス）を作成
+	if err := qu.qr.GetUserQuestsFromDB(&quests, userId); err != nil { //questRepositoryのGetAllQuestsFromDBを呼び出す -> questsに格納
 		return nil, err
 	}
 	// 成功したときの処理

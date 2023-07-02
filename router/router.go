@@ -47,7 +47,7 @@ func NewRouter(uc controller.IUserController, qc controller.IQuestController) *e
 		TokenLookup: "cookie:token",              // cookieからトークンを取得
 	}))
 	// クエスト関係のエンドポイントの設定
-	t.GET("", qc.GetAllQuests)
+	t.GET("", qc.GetUserQuests)
 	t.GET("/:questId", qc.GetQuestById)
 	t.POST("", qc.CreateQuest)
 	t.PUT("/:questId", qc.UpdateQuest)
