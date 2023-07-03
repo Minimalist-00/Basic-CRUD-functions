@@ -9,6 +9,7 @@ import (
 	"os"
 	"time"
 
+	"github.com/golang-jwt/jwt/v4"
 	"github.com/labstack/echo/v4"
 )
 
@@ -17,6 +18,7 @@ type IUserController interface {
 	LogIn(c echo.Context) error
 	LogOut(c echo.Context) error
 	CsrfToken(c echo.Context) error
+	GetUserName(c echo.Context) error
 }
 
 type userController struct {
@@ -83,4 +85,18 @@ func (uc *userController) CsrfToken(c echo.Context) error {
 	return c.JSON(http.StatusOK, echo.Map{
 		"csrf_token": token,
 	})
+}
+
+func (uc *userController) GetUserName(c echo.Context) error {
+	// JWTのclaimsからユーザーIDを取得
+	user := c.Get("user").(*jwt.Token) // jwtをデコードした内容を取得
+	claims := user.Claims.(jwt.MapClaims)
+	userId := uint(claims["user_id"].(float64)) // float64をuintにキャスト
+
+	// ユーザーIDを元にユーザー名を取得
+	username, err := uc.uu.GetUserName(userId)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, err.Error())
+	}
+	return c.JSON(http.StatusOK, username) //* ここでUserNameを取得してJSON形式で返す！
 }

@@ -11,6 +11,7 @@ import (
 type IUserRepository interface {
 	GetUserByEmail(user *model.User, email string) error //引数のuserにemailをもつユーザーを格納｜返り値 エラーを返すときに使う
 	CreateUser(user *model.User) error                   //引数のuserをDBに保存
+	GetUserByID(user *model.User, userId uint) error
 }
 
 type userRepository struct {
@@ -40,5 +41,14 @@ func (ur *userRepository) CreateUser(user *model.User) error {
 	} else {
 		return nil
 	}
+}
 
+// ユーザーIDを指定してユーザー情報を取得
+func (ur *userRepository) GetUserByID(user *model.User, userId uint) error {
+	err := ur.db.First(user, userId).Error // ユーザーIDを指定してユーザー情報を取得
+	if err != nil {
+		return err
+	} else {
+		return nil
+	}
 }
