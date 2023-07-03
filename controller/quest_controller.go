@@ -1,6 +1,11 @@
 package controller
 
-/* リクエストの受け付けとレスポンスの生成 */
+/*
+  ・リクエストの受付 echo.Context エンドポイント
+	・認証認可
+	・ビジネスロジックの呼び出し（useCase）
+	・レスポンスの作成
+*/
 
 import (
 	"bulletin-board-rest-api/model"

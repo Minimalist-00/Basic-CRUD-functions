@@ -18,39 +18,45 @@ import (
 )
 
 func NewRouter(uc controller.IUserController, qc controller.IQuestController) *echo.Echo {
-	// ログイン関係のエンドポイントにの設定
 	e := echo.New()
-	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{ // CORSのミドルウェアの設定
+
+	//* CORSのミドルウェアの設定
+	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
 		AllowOrigins: []string{"http://localhost:3000", os.Getenv("FE_URL")}, // フロントエンドのURLを許可
 		AllowHeaders: []string{echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAccept,
 			echo.HeaderAccessControlAllowHeaders, echo.HeaderXCSRFToken},
 		AllowMethods:     []string{"GET", "PUT", "POST", "DELETE"},
 		AllowCredentials: true,
 	}))
-	e.Use(middleware.CSRFWithConfig(middleware.CSRFConfig{ // CSRFのミドルウェアの設定
+
+	//* CSRFのミドルウェアの設定
+	e.Use(middleware.CSRFWithConfig(middleware.CSRFConfig{
 		CookiePath:     "/",
 		CookieDomain:   os.Getenv("API_DOMAIN"),
 		CookieHTTPOnly: true,
-		// CookieSameSite: http.SameSiteNoneMode, // フロントエンドとの通信にはSameSiteNoneModeを設定
-		CookieSameSite: http.SameSiteDefaultMode, // Postmanでのテスト用
+		// CookieSameSite: http.SameSiteNoneMode, //TODO: フロントエンドとの通信にはSameSiteNoneModeを使う
+		CookieSameSite: http.SameSiteDefaultMode, //TODO: Postmanでのテスト用
 		// CookieMaxAge:   60, // csrfトークンの有効期限（秒）
 	}))
 
+	//* ログイン関係のエンドポイントの設定
 	e.POST("/signup", uc.SignUp)
 	e.POST("/login", uc.LogIn)
 	e.POST("/logout", uc.LogOut)
 	e.GET("/csrf", uc.CsrfToken)
-	t := e.Group("/quests") // クエスト関係のエンドポイントのグループ化
-	// ミドルウェアの設定
-	t.Use(echojwt.WithConfig(echojwt.Config{ //エンドポイントにミドルウェアの追加
+	q := e.Group("/quests") // クエスト関係のエンドポイントのグループ化
+
+	//* ミドルウェアの設定
+	q.Use(echojwt.WithConfig(echojwt.Config{ //エンドポイントにミドルウェアの追加
 		SigningKey:  []byte(os.Getenv("SECRET")), // 環境変数からシークレットキーを取得
 		TokenLookup: "cookie:token",              // cookieからトークンを取得
 	}))
-	// クエスト関係のエンドポイントの設定
-	t.GET("", qc.GetUserQuests)
-	t.GET("/:questId", qc.GetQuestById)
-	t.POST("", qc.CreateQuest)
-	t.PUT("/:questId", qc.UpdateQuest)
-	t.DELETE("/:questId", qc.DeleteQuest)
+
+	//* クエスト関係のエンドポイントの設定
+	q.GET("", qc.GetUserQuests)
+	q.GET("/:questId", qc.GetQuestById)
+	q.POST("", qc.CreateQuest)
+	q.PUT("/:questId", qc.UpdateQuest)
+	q.DELETE("/:questId", qc.DeleteQuest)
 	return e
 }
