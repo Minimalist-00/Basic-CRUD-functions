@@ -9,6 +9,7 @@ import (
 	"os"
 	"time"
 
+	"github.com/golang-jwt/jwt/v4"
 	"github.com/labstack/echo/v4"
 )
 
@@ -17,6 +18,7 @@ type IUserController interface {
 	LogIn(c echo.Context) error
 	LogOut(c echo.Context) error
 	CsrfToken(c echo.Context) error
+	GetUserName(c echo.Context) error
 }
 
 type userController struct {
@@ -83,4 +85,36 @@ func (uc *userController) CsrfToken(c echo.Context) error {
 	return c.JSON(http.StatusOK, echo.Map{
 		"csrf_token": token,
 	})
+}
+
+// func (uc *userController) GetUserName(c echo.Context) error {
+// 	//* JWTのclaimsからユーザーIDを取得
+// 	userToken := c.Get("user").(*jwt.Token)
+// 	claims := userToken.Claims.(jwt.MapClaims)
+// 	userId := uint(claims["user_id"].(float64))
+
+// 	user := model.User{ID: userId}
+// 	userName, err := uc.uu.GetUserName(user)
+// 	if err != nil {
+// 		return c.JSON(http.StatusInternalServerError, err.Error())
+// 	}
+// 	return c.JSON(http.StatusOK, userName)
+// }
+
+func (uc *userController) GetUserName(c echo.Context) error {
+	userToken := c.Get("user").(*jwt.Token)
+	claims := userToken.Claims.(jwt.MapClaims)
+
+	userIdFloat, ok := claims["user_id"].(float64)
+	if !ok {
+		return c.JSON(http.StatusBadRequest, "Invalid user ID")
+	}
+	userId := uint(userIdFloat)
+
+	user := model.User{ID: userId}
+	userName, err := uc.uu.GetUserName(user)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, err.Error())
+	}
+	return c.JSON(http.StatusOK, userName)
 }

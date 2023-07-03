@@ -44,6 +44,10 @@ func NewRouter(uc controller.IUserController, qc controller.IQuestController) *e
 	e.POST("/login", uc.LogIn)
 	e.POST("/logout", uc.LogOut)
 	e.GET("/csrf", uc.CsrfToken)
+
+	//* ユーザー関係のエンドポイントの設定
+	e.GET("/userName", uc.GetUserName)
+
 	q := e.Group("/quests") // クエスト関係のエンドポイントのグループ化
 
 	//* ミドルウェアの設定
