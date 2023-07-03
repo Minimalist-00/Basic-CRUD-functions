@@ -57,7 +57,7 @@ func (uc *userController) LogIn(c echo.Context) error {
 	cookie.Expires = time.Now().Add(30 * 24 * time.Hour) // 有効期限
 	cookie.Path = "/"
 	cookie.Domain = os.Getenv("API_DOMAIN")
-	// cookie.Secure = true //postman test でfalseにする
+	// cookie.Secure = true //TODO: postman test でfalseにする
 	cookie.HttpOnly = true
 	cookie.SameSite = http.SameSiteNoneMode
 	c.SetCookie(cookie)
@@ -71,7 +71,7 @@ func (uc *userController) LogOut(c echo.Context) error {
 	cookie.Expires = time.Now()
 	cookie.Path = "/"
 	cookie.Domain = os.Getenv("API_DOMAIN")
-	// cookie.Secure = true //postman test でfalseにする
+	// cookie.Secure = true //TODO: postman test でfalseにする
 	cookie.HttpOnly = true
 	cookie.SameSite = http.SameSiteNoneMode
 	c.SetCookie(cookie)

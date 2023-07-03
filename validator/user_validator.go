@@ -8,7 +8,8 @@ import (
 )
 
 type IUserValidator interface {
-	UserValidate(user model.User) error
+	ValidateUserSignUp(user model.User) error
+	ValidateUserLogIn(user model.User) error
 }
 
 type userValidator struct{}
@@ -17,18 +18,39 @@ func NewUserValidator() IUserValidator {
 	return &userValidator{}
 }
 
-func (uv *userValidator) UserValidate(user model.User) error {
-	return validation.ValidateStruct(&user, //構造体の検証
-		validation.Field( //検証したいフィールドを指定
+func (uv *userValidator) ValidateUserSignUp(user model.User) error {
+	return validation.ValidateStruct(&user,
+		validation.Field(
 			&user.Email,
 			validation.Required.Error("メールアドレスを入力してください"),
 			validation.RuneLength(1, 30).Error("メールアドレスは30文字以内で入力してください"),
-			is.Email.Error("入力されたメールアドレスの形式が適切ではありません"), //Emailのフォーマットに準拠しているか
+			is.Email.Error("入力されたメールアドレスの形式が適切ではありません"),
 		),
 		validation.Field(
 			&user.Password,
 			validation.Required.Error("パスワードを入力してください"),
-			validation.RuneLength(6, 30).Error("パスワードは6～30文字以内で入力してください"),
+			validation.RuneLength(6, 20).Error("パスワードは6～20文字以内で入力してください"),
+		),
+		validation.Field(
+			&user.UserName,
+			validation.Required.Error("ユーザー名を入力してください"),
+			validation.RuneLength(1, 10).Error("ユーザー名は10文字以内で入力してください"),
+		),
+	)
+}
+
+func (uv *userValidator) ValidateUserLogIn(user model.User) error {
+	return validation.ValidateStruct(&user,
+		validation.Field(
+			&user.Email,
+			validation.Required.Error("メールアドレスを入力してください"),
+			validation.RuneLength(1, 30).Error("メールアドレスは30文字以内で入力してください"),
+			is.Email.Error("入力されたメールアドレスの形式が適切ではありません"),
+		),
+		validation.Field(
+			&user.Password,
+			validation.Required.Error("パスワードを入力してください"),
+			validation.RuneLength(6, 20).Error("パスワードは6～20文字以内で入力してください"),
 		),
 	)
 }
