@@ -28,7 +28,7 @@ func NewUserUsecase(ur repository.IUserRepository, uv validator.IUserValidator) 
 }
 
 func (uu *userUsecase) SignUp(user model.User) (model.UserResponse, error) {
-	if err := uu.uv.UserValidate(user); err != nil {
+	if err := uu.uv.ValidateUserSignUp(user); err != nil {
 		return model.UserResponse{}, err
 	}
 	//パスワードのハッシュ化
@@ -36,19 +36,20 @@ func (uu *userUsecase) SignUp(user model.User) (model.UserResponse, error) {
 	if err != nil {
 		return model.UserResponse{}, err
 	}
-	newUser := model.User{Email: user.Email, Password: string(hash)} //ハッシュ化したパスワードをnewUserに格納
-	if err := uu.ur.CreateUser(&newUser); err != nil {               //引数のnewUserをDBに保存
+	newUser := model.User{Email: user.Email, Password: string(hash), UserName: user.UserName} //ハッシュ化したパスワードをnewUserに格納
+	if err := uu.ur.CreateUser(&newUser); err != nil {                                        //引数のnewUserをDBに保存
 		return model.UserResponse{}, err
 	}
 	resUser := model.UserResponse{ //レスポンス用のUserResponse型の変数を作成
-		ID:    newUser.ID,
-		Email: newUser.Email,
+		ID:       newUser.ID,
+		Email:    newUser.Email,
+		UserName: newUser.UserName,
 	}
 	return resUser, nil
 }
 
 func (uu *userUsecase) Login(user model.User) (string, error) {
-	if err := uu.uv.UserValidate(user); err != nil {
+	if err := uu.uv.ValidateUserLogIn(user); err != nil {
 		return "", err //Loginメソッドの戻り値に適するように空の文字列とエラーを返す
 	}
 	//クライアントからのEmailがDB内に存在するかを確認

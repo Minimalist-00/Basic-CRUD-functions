@@ -15,6 +15,7 @@ type User struct {
 
 // クライアントに返す情報
 type UserResponse struct {
-	ID    uint   `json:"id" gorm:"primaryKey"`
-	Email string `json:"email" gorm:"unique"`
+	ID       uint   `json:"id" gorm:"primaryKey"`
+	Email    string `json:"email" gorm:"unique"`
+	UserName string `json:"user_name" gorm:"unique"`
 }
