@@ -34,7 +34,7 @@ type QuestResponse struct {
 	StartTime       time.Time `json:"start_time"`
 	EndTime         time.Time `json:"end_time"`
 	Image           []byte    `json:"image"` // 画像をバイナリデータで保存
-	Url             string    `json:"url"`
+	URL             string    `json:"url"`
 	CreatedAt       time.Time `json:"created_at"`
 	UpdatedAt       time.Time `json:"updated_at"`
 }

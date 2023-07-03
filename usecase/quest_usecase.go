@@ -34,13 +34,21 @@ func (qu *questUsecase) GetUserQuests(userId uint) ([]model.QuestResponse, error
 	// 成功したときの処理
 	resQuests := []model.QuestResponse{} //QuestResponseの配列を作成
 	for _, v := range quests {           //questsの中身を1つずつ取り出す
-		t := model.QuestResponse{
-			ID:        v.ID,
-			Title:     v.Title,
-			CreatedAt: v.CreatedAt,
-			UpdatedAt: v.UpdatedAt,
+		q := model.QuestResponse{
+			ID:              v.ID,
+			Title:           v.Title,
+			Description:     v.Description,
+			Category:        v.Category,
+			Max_paticipants: v.Max_paticipants,
+			Deadline:        v.Deadline,
+			StartTime:       v.StartTime,
+			EndTime:         v.EndTime,
+			Image:           v.Image,
+			URL:             v.URL,
+			CreatedAt:       v.CreatedAt,
+			UpdatedAt:       v.UpdatedAt,
 		}
-		resQuests = append(resQuests, t) //resQuestsにmodel.QuestResponseを追加
+		resQuests = append(resQuests, q) //resQuestsにmodel.QuestResponseを追加
 	}
 	return resQuests, nil
 }
@@ -50,11 +58,19 @@ func (qu *questUsecase) GetQuestById(userId uint, questId uint) (model.QuestResp
 	if err := qu.qr.GetQuestById(&quest, userId, questId); err != nil { //空の構造体とuser・questのIDを渡す
 		return model.QuestResponse{}, err
 	}
-	resQuest := model.QuestResponse{
-		ID:        quest.ID,
-		Title:     quest.Title,
-		CreatedAt: quest.CreatedAt,
-		UpdatedAt: quest.UpdatedAt,
+	resQuest := model.QuestResponse{ // QuestResponseのインスタンスを作成
+		ID:              quest.ID,
+		Title:           quest.Title,
+		Description:     quest.Description,
+		Category:        quest.Category,
+		Max_paticipants: quest.Max_paticipants,
+		Deadline:        quest.Deadline,
+		StartTime:       quest.StartTime,
+		EndTime:         quest.EndTime,
+		Image:           quest.Image,
+		URL:             quest.URL,
+		CreatedAt:       quest.CreatedAt,
+		UpdatedAt:       quest.UpdatedAt,
 	}
 	return resQuest, nil
 }
@@ -67,10 +83,18 @@ func (qu *questUsecase) CreateQuest(quest model.Quest) (model.QuestResponse, err
 		return model.QuestResponse{}, err //QuestResponseの空の構造体とエラーを返す
 	}
 	resQuest := model.QuestResponse{ //QuestResponseの構造体を作成
-		ID:        quest.ID,
-		Title:     quest.Title,
-		CreatedAt: quest.CreatedAt,
-		UpdatedAt: quest.UpdatedAt,
+		ID:              quest.ID,
+		Title:           quest.Title,
+		Description:     quest.Description,
+		Category:        quest.Category,
+		Max_paticipants: quest.Max_paticipants,
+		Deadline:        quest.Deadline,
+		StartTime:       quest.StartTime,
+		EndTime:         quest.EndTime,
+		Image:           quest.Image,
+		URL:             quest.URL,
+		CreatedAt:       quest.CreatedAt,
+		UpdatedAt:       quest.UpdatedAt,
 	}
 	return resQuest, nil
 }
@@ -83,10 +107,18 @@ func (qu *questUsecase) UpdateQuest(quest model.Quest, userId uint, questId uint
 		return model.QuestResponse{}, err
 	} //questのアドレスが指すメモリのクエストが更新後の値に書き換わっている
 	resQuest := model.QuestResponse{ //QuestResponseの構造体を作成
-		ID:        quest.ID,
-		Title:     quest.Title,
-		CreatedAt: quest.CreatedAt,
-		UpdatedAt: quest.UpdatedAt,
+		ID:              quest.ID,
+		Title:           quest.Title,
+		Description:     quest.Description,
+		Category:        quest.Category,
+		Max_paticipants: quest.Max_paticipants,
+		Deadline:        quest.Deadline,
+		StartTime:       quest.StartTime,
+		EndTime:         quest.EndTime,
+		Image:           quest.Image,
+		URL:             quest.URL,
+		CreatedAt:       quest.CreatedAt,
+		UpdatedAt:       quest.UpdatedAt,
 	}
 	return resQuest, nil
 }
