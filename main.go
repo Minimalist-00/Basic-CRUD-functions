@@ -20,5 +20,5 @@ func main() {
 	userController := controller.NewUserController(userUsecase)
 	questController := controller.NewQuestController(questUsecase)
 	e := router.NewRouter(userController, questController)
-	e.Logger.Fatal(e.Start(":8080"))
+	e.Logger.Fatal(e.Start(":8000"))
 }
