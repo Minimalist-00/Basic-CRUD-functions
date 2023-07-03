@@ -87,34 +87,16 @@ func (uc *userController) CsrfToken(c echo.Context) error {
 	})
 }
 
-// func (uc *userController) GetUserName(c echo.Context) error {
-// 	//* JWTのclaimsからユーザーIDを取得
-// 	userToken := c.Get("user").(*jwt.Token)
-// 	claims := userToken.Claims.(jwt.MapClaims)
-// 	userId := uint(claims["user_id"].(float64))
-
-// 	user := model.User{ID: userId}
-// 	userName, err := uc.uu.GetUserName(user)
-// 	if err != nil {
-// 		return c.JSON(http.StatusInternalServerError, err.Error())
-// 	}
-// 	return c.JSON(http.StatusOK, userName)
-// }
-
 func (uc *userController) GetUserName(c echo.Context) error {
-	userToken := c.Get("user").(*jwt.Token)
-	claims := userToken.Claims.(jwt.MapClaims)
+	// JWTのclaimsからユーザーIDを取得
+	user := c.Get("user").(*jwt.Token) // jwtをデコードした内容を取得
+	claims := user.Claims.(jwt.MapClaims)
+	userId := uint(claims["user_id"].(float64)) // float64をuintにキャスト
 
-	userIdFloat, ok := claims["user_id"].(float64)
-	if !ok {
-		return c.JSON(http.StatusBadRequest, "Invalid user ID")
-	}
-	userId := uint(userIdFloat)
-
-	user := model.User{ID: userId}
-	userName, err := uc.uu.GetUserName(user)
+	// ユーザーIDを元にユーザー名を取得
+	username, err := uc.uu.GetUserName(userId)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, err.Error())
 	}
-	return c.JSON(http.StatusOK, userName)
+	return c.JSON(http.StatusOK, username) //* ここでUserNameを取得してJSON形式で返す！
 }

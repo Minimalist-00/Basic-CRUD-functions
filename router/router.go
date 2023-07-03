@@ -46,11 +46,15 @@ func NewRouter(uc controller.IUserController, qc controller.IQuestController) *e
 	e.GET("/csrf", uc.CsrfToken)
 
 	//* ユーザー関係のエンドポイントの設定
-	e.GET("/userName", uc.GetUserName)
-
-	q := e.Group("/quests") // クエスト関係のエンドポイントのグループ化
+	u := e.Group("/user")
+	u.Use(echojwt.WithConfig(echojwt.Config{
+		SigningKey:  []byte(os.Getenv("SECRET")),
+		TokenLookup: "cookie:token",
+	}))
+	u.GET("/userName", uc.GetUserName)
 
 	//* ミドルウェアの設定
+	q := e.Group("/quests")                  // クエスト関係のエンドポイントのグループ化
 	q.Use(echojwt.WithConfig(echojwt.Config{ //エンドポイントにミドルウェアの追加
 		SigningKey:  []byte(os.Getenv("SECRET")), // 環境変数からシークレットキーを取得
 		TokenLookup: "cookie:token",              // cookieからトークンを取得
