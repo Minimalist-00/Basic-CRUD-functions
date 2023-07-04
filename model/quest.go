@@ -5,23 +5,21 @@ package model
 import "time"
 
 type Quest struct {
-	ID              uint      `json:"id" gorm:"primaryKey"`
-	Title           string    `json:"title"`
-	Description     string    `json:"description"`
-	Category        string    `json:"category"`
-	Max_paticipants uint      `json:"max_paticipants" `
-	Deadline        time.Time `json:"deadline" `
-	StartTime       time.Time `json:"start_time"`
-	EndTime         time.Time `json:"end_time" gorm:"default: NULL"`
-	Image           []byte    `json:"image"` // 画像をバイナリデータで保存
-	URL             string    `json:"url"`
-
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
-
-	User         User               `json:"user" gorm:"foreignKey:UserId; constraint:OnDelete:CASCADE"` // UserIDのリレーション｜ユーザー削除時にクエストも消える
-	UserId       uint               `json:"user_id" gorm:"not null"`
-	Participants []QuestParticipant `gorm:"foreignKey:QuestId"`
+	ID              uint               `json:"id" gorm:"primaryKey"`
+	Title           string             `json:"title"`
+	Description     string             `json:"description"`
+	Category        string             `json:"category"`
+	Max_paticipants uint               `json:"max_paticipants" `
+	Deadline        time.Time          `json:"deadline" `
+	StartTime       time.Time          `json:"start_time"`
+	EndTime         time.Time          `json:"end_time" gorm:"default: NULL"`
+	Image           []byte             `json:"image"` // 画像をバイナリデータで保存
+	URL             string             `json:"url"`
+	CreatedAt       time.Time          `json:"created_at"`
+	UpdatedAt       time.Time          `json:"updated_at"`
+	User            User               `json:"user" gorm:"foreignKey:UserId; constraint:OnDelete:CASCADE"` // UserIDのリレーション｜ユーザー削除時にクエストも消える
+	UserId          uint               `json:"user_id" gorm:"not null"`
+	Participants    []QuestParticipant `json:"participants" gorm:"foreignKey:QuestId"` // QuestIdのリレーション
 }
 
 // クライアントに返す情報
@@ -38,6 +36,6 @@ type QuestResponse struct {
 	URL             string    `json:"url"`
 	CreatedAt       time.Time `json:"created_at"`
 	UpdatedAt       time.Time `json:"updated_at"`
-	UserName        string    `json:"user_name"`
-	Participants    []string  `json:"participants"`
+	UserName        string    `json:"user_name"`    // 作成者の名前
+	Participants    []string  `json:"participants"` // 参加者の名前のリスト
 }

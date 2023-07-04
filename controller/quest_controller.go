@@ -18,6 +18,7 @@ import (
 )
 
 type IQuestController interface {
+	GetAllQuests(c echo.Context) error
 	GetUserQuests(c echo.Context) error
 	GetQuestById(c echo.Context) error
 	CreateQuest(c echo.Context) error
@@ -33,6 +34,14 @@ type questController struct {
 // usecaseのインスタンスを受け取る
 func NewQuestController(qu usecase.IQuestUsecase) IQuestController {
 	return &questController{qu}
+}
+
+func (qc *questController) GetAllQuests(c echo.Context) error {
+	questsRes, err := qc.qu.GetAllQuests() // 引数はないよ
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, err.Error())
+	}
+	return c.JSON(http.StatusOK, questsRes)
 }
 
 func (qc *questController) GetUserQuests(c echo.Context) error {
