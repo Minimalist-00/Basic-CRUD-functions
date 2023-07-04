@@ -6,13 +6,13 @@ import "time"
 
 type Quest struct {
 	ID              uint      `json:"id" gorm:"primaryKey"`
-	Title           string    `json:"title" gorm:"not null"` // 空の値を許可しない
+	Title           string    `json:"title"`
 	Description     string    `json:"description"`
-	Category        string    `json:"category" gorm:"not null"`
-	Max_paticipants uint      `json:"max_paticipants" gorm:"not null"`
-	Deadline        time.Time `json:"deadline" gorm:"not null"`
+	Category        string    `json:"category"`
+	Max_paticipants uint      `json:"max_paticipants" `
+	Deadline        time.Time `json:"deadline" `
 	StartTime       time.Time `json:"start_time"`
-	EndTime         time.Time `json:"end_time"`
+	EndTime         time.Time `json:"end_time" gorm:"default: NULL"`
 	Image           []byte    `json:"image"` // 画像をバイナリデータで保存
 	URL             string    `json:"url"`
 
@@ -26,11 +26,11 @@ type Quest struct {
 // クライアントに返す情報
 type QuestResponse struct {
 	ID              uint      `json:"id" gorm:"primaryKey"`
-	Title           string    `json:"title" gorm:"not null"`
+	Title           string    `json:"title" `
 	Description     string    `json:"description"`
-	Category        string    `json:"category" gorm:"not null"`
-	Max_paticipants uint      `json:"max_paticipants" gorm:"not null"`
-	Deadline        time.Time `json:"deadline" gorm:"not null"`
+	Category        string    `json:"category" `
+	Max_paticipants uint      `json:"max_paticipants" `
+	Deadline        time.Time `json:"deadline" `
 	StartTime       time.Time `json:"start_time"`
 	EndTime         time.Time `json:"end_time"`
 	Image           []byte    `json:"image"` // 画像をバイナリデータで保存
