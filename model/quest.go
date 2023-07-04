@@ -19,8 +19,9 @@ type Quest struct {
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
 
-	User   User `json:"user" gorm:"foreignKey:UserId; constraint:OnDelete:CASCADE"` // UserIDのリレーション｜ユーザー削除時にクエストも消える
-	UserId uint `json:"user_id" gorm:"not null"`
+	User         User               `json:"user" gorm:"foreignKey:UserId; constraint:OnDelete:CASCADE"` // UserIDのリレーション｜ユーザー削除時にクエストも消える
+	UserId       uint               `json:"user_id" gorm:"not null"`
+	Participants []QuestParticipant `gorm:"foreignKey:QuestId"`
 }
 
 // クライアントに返す情報
@@ -37,4 +38,6 @@ type QuestResponse struct {
 	URL             string    `json:"url"`
 	CreatedAt       time.Time `json:"created_at"`
 	UpdatedAt       time.Time `json:"updated_at"`
+	UserName        string    `json:"user_name"`
+	Participants    []string  `json:"participants"`
 }

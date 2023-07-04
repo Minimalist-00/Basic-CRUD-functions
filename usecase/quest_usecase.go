@@ -9,6 +9,7 @@ import (
 )
 
 type IQuestUsecase interface {
+	GetAllQuestsWithParticipants() ([]model.QuestResponse, error)
 	GetUserQuests(userId uint) ([]model.QuestResponse, error)
 	GetQuestById(userId uint, questId uint) (model.QuestResponse, error)
 	CreateQuest(quest model.Quest) (model.QuestResponse, error)
@@ -24,6 +25,35 @@ type questUsecase struct {
 
 func NewQuestUsecase(qr repository.IQuestRepository, qv validator.IQuestValidator) IQuestUsecase {
 	return &questUsecase{qr, qv}
+}
+
+func (qu *questUsecase) GetAllQuestsWithParticipants() ([]model.QuestResponse, error) {
+	quests := []model.Quest{}
+	if err := qu.qr.GetAllQuestsWithParticipantsFromDB(&quests); err != nil {
+		return nil, err
+	}
+
+	// 成功したときの処理
+	resQuests := []model.QuestResponse{}
+	for _, v := range quests {
+		q := model.QuestResponse{
+			ID:              v.ID,
+			Title:           v.Title,
+			Description:     v.Description,
+			Category:        v.Category,
+			Max_paticipants: v.Max_paticipants,
+			Deadline:        v.Deadline,
+			StartTime:       v.StartTime,
+			EndTime:         v.EndTime,
+			Image:           v.Image,
+			URL:             v.URL,
+			CreatedAt:       v.CreatedAt,
+			UpdatedAt:       v.UpdatedAt,
+			Participants:    v.Participants, // ParticipantsもResponseに含めます。
+		}
+		resQuests = append(resQuests, q)
+	}
+	return resQuests, nil
 }
 
 func (qu *questUsecase) GetUserQuests(userId uint) ([]model.QuestResponse, error) {
