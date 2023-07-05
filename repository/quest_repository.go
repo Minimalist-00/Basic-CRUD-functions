@@ -11,6 +11,7 @@ import (
 )
 
 type IQuestRepository interface {
+	GetAllQuestsFromDB(quests *[]model.Quest) error
 	GetUserQuestsFromDB(quests *[]model.Quest, userId uint) error //全クエストを配列に格納する
 	GetQuestById(quest *model.Quest, UserId uint, QuestId uint) error
 	CreateQuest(quest *model.Quest) error
@@ -27,7 +28,14 @@ func NewQuestRepository(db *gorm.DB) IQuestRepository {
 	return &questRepository{db}
 }
 
-// DBからクエストの一覧を取得
+func (qr *questRepository) GetAllQuestsFromDB(quests *[]model.Quest) error {
+	if err := qr.db.Preload("User").Preload("Participants.User").Find(quests).Error; err != nil {
+		// 募集主の情報 + 参加者の情報（全て）を取得。フィールド名を指定
+		return err
+	}
+	return nil
+}
+
 func (qr *questRepository) GetUserQuestsFromDB(quests *[]model.Quest, userId uint) error {
 	// クエスト一覧の中から、引数で渡されたuserIdと一致するクエスト一覧を取得する
 	// UserテーブルのUserIdを参照 / created_atでソート / クエスト一覧をquestsに格納

@@ -61,8 +61,9 @@ func NewRouter(uc controller.IUserController, qc controller.IQuestController) *e
 	}))
 
 	//* クエスト関係のエンドポイントの設定
-	q.GET("", qc.GetUserQuests)
+	q.GET("", qc.GetAllQuests)
 	q.GET("/:questId", qc.GetQuestById)
+	q.GET("/userCreate", qc.GetUserQuests) // ユーザーが作成したクエスト一覧
 	q.POST("", qc.CreateQuest)
 	q.PUT("/:questId", qc.UpdateQuest)
 	q.DELETE("/:questId", qc.DeleteQuest)

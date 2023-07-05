@@ -9,6 +9,7 @@ import (
 )
 
 type IQuestUsecase interface {
+	GetAllQuests() ([]model.QuestResponse, error)
 	GetUserQuests(userId uint) ([]model.QuestResponse, error)
 	GetQuestById(userId uint, questId uint) (model.QuestResponse, error)
 	CreateQuest(quest model.Quest) (model.QuestResponse, error)
@@ -26,6 +27,39 @@ func NewQuestUsecase(qr repository.IQuestRepository, qv validator.IQuestValidato
 	return &questUsecase{qr, qv}
 }
 
+func (qu *questUsecase) GetAllQuests() ([]model.QuestResponse, error) {
+	quests := []model.Quest{}
+	if err := qu.qr.GetAllQuestsFromDB(&quests); err != nil {
+		return nil, err
+	}
+
+	resQuests := []model.QuestResponse{} // QuestResponseの空の配列（スライス）を作成
+	for _, quest := range quests {       // クエスト一覧の中身を1つずつ取り出す
+		res := model.QuestResponse{
+			ID:              quest.ID,
+			Title:           quest.Title,
+			Description:     quest.Description,
+			Category:        quest.Category,
+			Max_paticipants: quest.Max_paticipants,
+			Deadline:        quest.Deadline,
+			StartTime:       quest.StartTime,
+			EndTime:         quest.EndTime,
+			Image:           quest.Image,
+			URL:             quest.URL,
+			CreatedAt:       quest.CreatedAt,
+			UpdatedAt:       quest.UpdatedAt,
+			UserName:        quest.User.UserName,                        // User構造体のUserNameを取得
+			Participants:    make([]string, 0, len(quest.Participants)), // 参加者の名前の空のリストを作成
+		}
+		//* クエスト参加者情報から名前だけ取り出して配列に格納
+		for _, p := range quest.Participants {
+			res.Participants = append(res.Participants, p.User.UserName)
+		}
+		resQuests = append(resQuests, res)
+	}
+	return resQuests, nil
+}
+
 func (qu *questUsecase) GetUserQuests(userId uint) ([]model.QuestResponse, error) {
 	quests := []model.Quest{}                                          //Questの配列（スライス）を作成
 	if err := qu.qr.GetUserQuestsFromDB(&quests, userId); err != nil { //questRepositoryのGetAllQuestsFromDBを呼び出す -> questsに格納
@@ -33,22 +67,22 @@ func (qu *questUsecase) GetUserQuests(userId uint) ([]model.QuestResponse, error
 	}
 	// 成功したときの処理
 	resQuests := []model.QuestResponse{} //QuestResponseの配列を作成
-	for _, v := range quests {           //questsの中身を1つずつ取り出す
-		q := model.QuestResponse{
-			ID:              v.ID,
-			Title:           v.Title,
-			Description:     v.Description,
-			Category:        v.Category,
-			Max_paticipants: v.Max_paticipants,
-			Deadline:        v.Deadline,
-			StartTime:       v.StartTime,
-			EndTime:         v.EndTime,
-			Image:           v.Image,
-			URL:             v.URL,
-			CreatedAt:       v.CreatedAt,
-			UpdatedAt:       v.UpdatedAt,
+	for _, quest := range quests {       //questsの中身を1つずつ取り出す
+		res := model.QuestResponse{
+			ID:              quest.ID,
+			Title:           quest.Title,
+			Description:     quest.Description,
+			Category:        quest.Category,
+			Max_paticipants: quest.Max_paticipants,
+			Deadline:        quest.Deadline,
+			StartTime:       quest.StartTime,
+			EndTime:         quest.EndTime,
+			Image:           quest.Image,
+			URL:             quest.URL,
+			CreatedAt:       quest.CreatedAt,
+			UpdatedAt:       quest.UpdatedAt,
 		}
-		resQuests = append(resQuests, q) //resQuestsにmodel.QuestResponseを追加
+		resQuests = append(resQuests, res) //resQuestsにmodel.QuestResponseを追加
 	}
 	return resQuests, nil
 }
