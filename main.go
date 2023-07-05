@@ -16,7 +16,7 @@ func main() {
 	userRepository := repository.NewUserRepository(db)
 	questRepository := repository.NewQuestRepository(db)
 	userUsecase := usecase.NewUserUsecase(userRepository, userVlidator)
-	questUsecase := usecase.NewQuestUsecase(questRepository, questValidator)
+	questUsecase := usecase.NewQuestUsecase(questRepository, userRepository, questValidator)
 	userController := controller.NewUserController(userUsecase)
 	questController := controller.NewQuestController(questUsecase)
 	e := router.NewRouter(userController, questController)
