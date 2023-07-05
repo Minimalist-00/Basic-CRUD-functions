@@ -20,11 +20,12 @@ type IQuestUsecase interface {
 type questUsecase struct {
 	// repositoryのinterfaceに依存
 	qr repository.IQuestRepository //IQuestRepositoryを実装した構造体
+	ur repository.IUserRepository
 	qv validator.IQuestValidator
 }
 
-func NewQuestUsecase(qr repository.IQuestRepository, qv validator.IQuestValidator) IQuestUsecase {
-	return &questUsecase{qr, qv}
+func NewQuestUsecase(qr repository.IQuestRepository, ur repository.IUserRepository, qv validator.IQuestValidator) IQuestUsecase {
+	return &questUsecase{qr, ur, qv}
 }
 
 func (qu *questUsecase) GetAllQuests() ([]model.QuestResponse, error) {
@@ -113,10 +114,18 @@ func (qu *questUsecase) CreateQuest(quest model.Quest) (model.QuestResponse, err
 	if err := qu.qv.QuestValidate(quest); err != nil {
 		return model.QuestResponse{}, err
 	}
-	if err := qu.qr.CreateQuest(&quest); err != nil { //questRepositoryのCreateQuestを呼び出す
-		return model.QuestResponse{}, err //QuestResponseの空の構造体とエラーを返す
+	if err := qu.qr.CreateQuest(&quest); err != nil {
+		return model.QuestResponse{}, err
 	}
-	resQuest := model.QuestResponse{ //QuestResponseの構造体を作成
+
+	// Get user info
+	User := model.User{} //Userの空の構造体を作成
+	//* questのUserIDからUser情報を取得する！
+	if err := qu.ur.GetUserByID(&User, quest.UserId); err != nil {
+		return model.QuestResponse{}, err
+	}
+
+	resQuest := model.QuestResponse{
 		ID:              quest.ID,
 		Title:           quest.Title,
 		Description:     quest.Description,
@@ -129,6 +138,8 @@ func (qu *questUsecase) CreateQuest(quest model.Quest) (model.QuestResponse, err
 		URL:             quest.URL,
 		CreatedAt:       quest.CreatedAt,
 		UpdatedAt:       quest.UpdatedAt,
+		UserName:        User.UserName,
+		Participants:    []string{},
 	}
 	return resQuest, nil
 }
