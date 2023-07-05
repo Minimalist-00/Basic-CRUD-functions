@@ -12,14 +12,14 @@ type Quest struct {
 	Max_paticipants uint               `json:"max_paticipants" `
 	Deadline        time.Time          `json:"deadline" `
 	StartTime       time.Time          `json:"start_time"`
-	EndTime         time.Time          `json:"end_time" gorm:"default: NULL"`
+	EndTime         time.Time          `json:"end_time"`
 	Image           []byte             `json:"image"` // 画像をバイナリデータで保存
 	URL             string             `json:"url"`
 	CreatedAt       time.Time          `json:"created_at"`
 	UpdatedAt       time.Time          `json:"updated_at"`
-	User            User               `json:"user" gorm:"foreignKey:UserId; constraint:OnDelete:CASCADE"` // UserIDのリレーション｜ユーザー削除時にクエストも消える
+	User            User               `json:"user" gorm:"foreignKey:UserId; constraint:OnDelete:CASCADE"` // UserIDを元にUserテーブルと紐付ける
 	UserId          uint               `json:"user_id" gorm:"not null"`
-	Participants    []QuestParticipant `json:"participants" gorm:"foreignKey:QuestId"` // QuestIdのリレーション
+	Participants    []QuestParticipant `json:"participants" gorm:"foreignKey:QuestId"` // QuestParticipantテーブルと紐付ける
 }
 
 // クライアントに返す情報

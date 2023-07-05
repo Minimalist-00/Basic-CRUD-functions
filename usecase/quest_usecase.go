@@ -33,8 +33,8 @@ func (qu *questUsecase) GetAllQuests() ([]model.QuestResponse, error) {
 		return nil, err
 	}
 
-	resQuests := []model.QuestResponse{}
-	for _, quest := range quests { // クエスト一覧の中身を1つずつ取り出す
+	resQuests := []model.QuestResponse{} // QuestResponseの空の配列（スライス）を作成
+	for _, quest := range quests {       // クエスト一覧の中身を1つずつ取り出す
 		res := model.QuestResponse{
 			ID:              quest.ID,
 			Title:           quest.Title,
@@ -51,7 +51,7 @@ func (qu *questUsecase) GetAllQuests() ([]model.QuestResponse, error) {
 			UserName:        quest.User.UserName,                        // User構造体のUserNameを取得
 			Participants:    make([]string, 0, len(quest.Participants)), // 参加者の名前の空のリストを作成
 		}
-		//* クエスト参加者情報から名前だけ取り出す
+		//* クエスト参加者情報から名前だけ取り出して配列に格納
 		for _, p := range quest.Participants {
 			res.Participants = append(res.Participants, p.User.UserName)
 		}

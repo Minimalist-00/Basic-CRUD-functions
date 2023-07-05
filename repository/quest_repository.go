@@ -29,8 +29,8 @@ func NewQuestRepository(db *gorm.DB) IQuestRepository {
 }
 
 func (qr *questRepository) GetAllQuestsFromDB(quests *[]model.Quest) error {
-	if err := qr.db.Preload("User").Preload("QuestParticipants.User").Find(quests).Error; err != nil {
-		// 募集主の情報 + 参加者の情報（全て）を取得
+	if err := qr.db.Preload("User").Preload("Participants.User").Find(quests).Error; err != nil {
+		// 募集主の情報 + 参加者の情報（全て）を取得。フィールド名を指定
 		return err
 	}
 	return nil
