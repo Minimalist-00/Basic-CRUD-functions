@@ -109,7 +109,7 @@ func (qr *questRepository) JoinQuest(userId uint, questId uint) error {
 }
 
 func (qr *questRepository) CancelQuest(userId uint, questId uint) error {
-	result := qr.db.Where("quest_id=? AND user_id=?", questId, userId).Delete(&model.Quest{})
+	result := qr.db.Where("quest_id=? AND user_id=?", questId, userId).Delete(&model.QuestParticipant{})
 	if result.Error != nil {
 		return result.Error
 	}
