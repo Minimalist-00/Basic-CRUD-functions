@@ -24,6 +24,8 @@ type IQuestController interface {
 	CreateQuest(c echo.Context) error
 	UpdateQuest(c echo.Context) error
 	DeleteQuest(c echo.Context) error
+	JoinQuest(c echo.Context) error
+	CancelQuest(c echo.Context) error
 }
 
 type questController struct {
@@ -106,6 +108,10 @@ func (qc *questController) UpdateQuest(c echo.Context) error {
 	return c.JSON(http.StatusOK, questRes)
 }
 
+/*
+* jwtトークンからuserIDの取得 + パラメータからQuestIDを取得
+* userIDとQuestIDを元にクエストを削除するusecaseのメソッドを呼び出す
+ */
 func (qc *questController) DeleteQuest(c echo.Context) error {
 	user := c.Get("user").(*jwt.Token)
 	claims := user.Claims.(jwt.MapClaims)
@@ -114,6 +120,34 @@ func (qc *questController) DeleteQuest(c echo.Context) error {
 	questId, _ := strconv.Atoi(id)
 
 	err := qc.qu.DeleteQuest(uint(userId.(float64)), uint(questId))
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, err.Error())
+	}
+	return c.NoContent(http.StatusNoContent)
+}
+
+func (qc *questController) JoinQuest(c echo.Context) error {
+	user := c.Get("user").(*jwt.Token)
+	claims := user.Claims.(jwt.MapClaims)
+	userId := claims["user_id"]
+	id := c.Param("questId")
+	questId, _ := strconv.Atoi(id)
+
+	err := qc.qu.JoinQuest(uint(userId.(float64)), uint(questId))
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, err.Error())
+	}
+	return c.NoContent(http.StatusNoContent)
+}
+
+func (qc *questController) CancelQuest(c echo.Context) error {
+	user := c.Get("user").(*jwt.Token)
+	claims := user.Claims.(jwt.MapClaims)
+	userId := claims["user_id"]
+	id := c.Param("questId")
+	questId, _ := strconv.Atoi(id)
+
+	err := qc.qu.CancelQuest(uint(userId.(float64)), uint(questId))
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, err.Error())
 	}

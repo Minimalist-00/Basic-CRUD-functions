@@ -15,6 +15,8 @@ type IQuestUsecase interface {
 	CreateQuest(quest model.Quest) (model.QuestResponse, error)
 	UpdateQuest(quest model.Quest, userId uint, questId uint) (model.QuestResponse, error)
 	DeleteQuest(userId uint, questId uint) error
+	JoinQuest(userId uint, questId uint) error
+	CancelQuest(userId uint, questId uint) error
 }
 
 type questUsecase struct {
@@ -170,6 +172,17 @@ func (qu *questUsecase) UpdateQuest(quest model.Quest, userId uint, questId uint
 
 func (qu *questUsecase) DeleteQuest(userId uint, questId uint) error {
 	if err := qu.qr.DeleteQuest(userId, questId); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (qu *questUsecase) JoinQuest(userId uint, questId uint) error {
+	return qu.qr.JoinQuest(userId, questId)
+}
+
+func (qu *questUsecase) CancelQuest(userId uint, questId uint) error {
+	if err := qu.qr.CancelQuest(userId, questId); err != nil {
 		return err
 	}
 	return nil

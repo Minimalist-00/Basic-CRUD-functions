@@ -5,6 +5,7 @@ package repository
 import (
 	"bulletin-board-rest-api/model"
 	"fmt"
+	"time"
 
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
@@ -17,6 +18,8 @@ type IQuestRepository interface {
 	CreateQuest(quest *model.Quest) error
 	UpdateQuest(quest *model.Quest, UserId uint, QuestId uint) error
 	DeleteQuest(UserId uint, QuestId uint) error
+	JoinQuest(UserId uint, QuestId uint) error
+	CancelQuest(UserId uint, QuestId uint) error
 }
 
 type questRepository struct {
@@ -81,6 +84,29 @@ func (qr *questRepository) UpdateQuest(quest *model.Quest, userId uint, questId 
 
 func (qr *questRepository) DeleteQuest(userId uint, questId uint) error {
 	result := qr.db.Where("id=? AND user_id=?", questId, userId).Delete(&model.Quest{})
+	if result.Error != nil {
+		return result.Error
+	}
+	if result.RowsAffected < 1 {
+		return fmt.Errorf("object does not exist")
+	}
+	return nil
+}
+
+func (qr *questRepository) JoinQuest(userId uint, questId uint) error {
+	participant := &model.QuestParticipant{
+		JoinedAt: time.Now(), // 現在時刻を取得
+		UserId:   userId,
+		QuestId:  questId,
+	}
+	if err := qr.db.Create(participant).Error; err != nil {
+		return err
+	}
+	return nil
+}
+
+func (qr *questRepository) CancelQuest(userId uint, questId uint) error {
+	result := qr.db.Where("quest_id=? AND user_id=?", questId, userId).Delete(&model.Quest{})
 	if result.Error != nil {
 		return result.Error
 	}
