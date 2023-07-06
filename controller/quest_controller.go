@@ -137,7 +137,7 @@ func (qc *questController) JoinQuest(c echo.Context) error {
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, err.Error())
 	}
-	return c.NoContent(http.StatusNoContent)
+	return c.JSON(http.StatusOK, "クエストの参加が確定しました！")
 }
 
 func (qc *questController) CancelQuest(c echo.Context) error {

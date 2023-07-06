@@ -178,7 +178,10 @@ func (qu *questUsecase) DeleteQuest(userId uint, questId uint) error {
 }
 
 func (qu *questUsecase) JoinQuest(userId uint, questId uint) error {
-	return qu.qr.JoinQuest(userId, questId)
+	if err := qu.qr.JoinQuest(userId, questId); err != nil {
+		return err
+	}
+	return nil
 }
 
 func (qu *questUsecase) CancelQuest(userId uint, questId uint) error {

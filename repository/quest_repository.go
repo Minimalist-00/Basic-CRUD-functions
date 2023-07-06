@@ -94,8 +94,11 @@ func (qr *questRepository) DeleteQuest(userId uint, questId uint) error {
 }
 
 func (qr *questRepository) JoinQuest(userId uint, questId uint) error {
+	now := time.Now()
+	jst := time.FixedZone("Asia/Tokyo", 9*60*60)
+
 	participant := &model.QuestParticipant{
-		JoinedAt: time.Now(), // 現在時刻を取得
+		JoinedAt: now.In(jst), // 現在時刻を取得
 		UserId:   userId,
 		QuestId:  questId,
 	}
