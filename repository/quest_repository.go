@@ -32,7 +32,7 @@ func NewQuestRepository(db *gorm.DB) IQuestRepository {
 }
 
 func (qr *questRepository) GetAllQuestsFromDB(quests *[]model.Quest) error {
-	if err := qr.db.Preload("User").Preload("Participants.User").Find(quests).Error; err != nil {
+	if err := qr.db.Preload("User").Preload("Participants.User").Order("created_at DESC").Find(quests).Error; err != nil {
 		// 募集主の情報 + 参加者の情報（全て）を取得。フィールド名を指定
 		return err
 	}
@@ -42,7 +42,7 @@ func (qr *questRepository) GetAllQuestsFromDB(quests *[]model.Quest) error {
 func (qr *questRepository) GetUserQuestsFromDB(quests *[]model.Quest, userId uint) error {
 	// クエスト一覧の中から、引数で渡されたuserIdと一致するクエスト一覧を取得する
 	// UserテーブルのUserIdを参照 / created_atでソート / クエスト一覧をquestsに格納
-	if err := qr.db.Joins("User").Where("user_id=?", userId).Order("created_at").Find(quests).Error; err != nil {
+	if err := qr.db.Joins("User").Where("user_id=?", userId).Order("created_at DESC").Find(quests).Error; err != nil {
 		return err
 	}
 	return nil
@@ -65,13 +65,15 @@ func (qr *questRepository) CreateQuest(quest *model.Quest) error {
 
 func (qr *questRepository) UpdateQuest(quest *model.Quest, userId uint, questId uint) error {
 	result := qr.db.Model(quest).Clauses(clause.Returning{}).Where("id=? AND user_id=?", questId, userId).Updates(map[string]interface{}{
-		"title":       quest.Title,
-		"description": quest.Description,
-		"deadline":    quest.Deadline,
-		"start_time":  quest.StartTime,
-		"end_time":    quest.EndTime,
-		"image":       quest.Image,
-		"url":         quest.URL,
+		"title":            quest.Title,
+		"description":      quest.Description,
+		"category":         quest.Category,
+		"max_participants": quest.MaxParticipants,
+		"deadline":         quest.Deadline,
+		"start_time":       quest.StartTime,
+		"end_time":         quest.EndTime,
+		"image":            quest.Image,
+		"url":              quest.URL,
 	})
 	if result.Error != nil {
 		return result.Error

@@ -6,14 +6,15 @@ import (
 	"bulletin-board-rest-api/model"
 	"bulletin-board-rest-api/repository"
 	"bulletin-board-rest-api/validator"
+	"time"
 )
 
 type IQuestUsecase interface {
 	GetAllQuests() ([]model.QuestResponse, error)
 	GetUserQuests(userId uint) ([]model.QuestResponse, error)
 	GetQuestById(userId uint, questId uint) (model.QuestResponse, error)
-	CreateQuest(quest model.Quest) (model.QuestResponse, error)
-	UpdateQuest(quest model.Quest, userId uint, questId uint) (model.QuestResponse, error)
+	CreateQuest(quest model.Quest) error
+	UpdateQuest(quest model.Quest, userId uint, questId uint) error
 	DeleteQuest(userId uint, questId uint) error
 	JoinQuest(userId uint, questId uint) error
 	CancelQuest(userId uint, questId uint) error
@@ -30,6 +31,14 @@ func NewQuestUsecase(qr repository.IQuestRepository, ur repository.IUserReposito
 	return &questUsecase{qr, ur, qv}
 }
 
+/* ゼロ値をnilに変換するヘルパー関数nilIfZero */
+func nilIfZero(t time.Time) *time.Time {
+	if t.IsZero() {
+		return nil
+	}
+	return &t
+}
+
 func (qu *questUsecase) GetAllQuests() ([]model.QuestResponse, error) {
 	quests := []model.Quest{}
 	if err := qu.qr.GetAllQuestsFromDB(&quests); err != nil {
@@ -43,17 +52,18 @@ func (qu *questUsecase) GetAllQuests() ([]model.QuestResponse, error) {
 			Title:           quest.Title,
 			Description:     quest.Description,
 			Category:        quest.Category,
-			Max_paticipants: quest.Max_paticipants,
-			Deadline:        quest.Deadline,
-			StartTime:       quest.StartTime,
-			EndTime:         quest.EndTime,
-			Image:           quest.Image,
-			URL:             quest.URL,
-			CreatedAt:       quest.CreatedAt,
-			UpdatedAt:       quest.UpdatedAt,
-			UserName:        quest.User.UserName,                        // User構造体のUserNameを取得
-			Participants:    make([]string, 0, len(quest.Participants)), // 参加者の名前の空のリストを作成
+			MaxParticipants: quest.MaxParticipants,
+			Deadline:        nilIfZero(quest.Deadline),
+			StartTime:       nilIfZero(quest.StartTime),
+			EndTime:         nilIfZero(quest.EndTime),
+			// Image:           quest.Image,
+			URL:          quest.URL,
+			CreatedAt:    quest.CreatedAt,
+			UpdatedAt:    quest.UpdatedAt,
+			UserName:     quest.User.UserName,                        // User構造体のUserNameを取得
+			Participants: make([]string, 0, len(quest.Participants)), // 参加者の名前の空のリストを作成
 		}
+
 		//* クエスト参加者情報から名前だけ取り出して配列に格納
 		for _, p := range quest.Participants {
 			res.Participants = append(res.Participants, p.User.UserName)
@@ -76,14 +86,14 @@ func (qu *questUsecase) GetUserQuests(userId uint) ([]model.QuestResponse, error
 			Title:           quest.Title,
 			Description:     quest.Description,
 			Category:        quest.Category,
-			Max_paticipants: quest.Max_paticipants,
-			Deadline:        quest.Deadline,
-			StartTime:       quest.StartTime,
-			EndTime:         quest.EndTime,
-			Image:           quest.Image,
-			URL:             quest.URL,
-			CreatedAt:       quest.CreatedAt,
-			UpdatedAt:       quest.UpdatedAt,
+			MaxParticipants: quest.MaxParticipants,
+			Deadline:        nilIfZero(quest.Deadline),
+			StartTime:       nilIfZero(quest.StartTime),
+			EndTime:         nilIfZero(quest.EndTime),
+			// Image:           quest.Image,
+			URL:       quest.URL,
+			CreatedAt: quest.CreatedAt,
+			UpdatedAt: quest.UpdatedAt,
 		}
 		resQuests = append(resQuests, res) //resQuestsにmodel.QuestResponseを追加
 	}
@@ -100,74 +110,36 @@ func (qu *questUsecase) GetQuestById(userId uint, questId uint) (model.QuestResp
 		Title:           quest.Title,
 		Description:     quest.Description,
 		Category:        quest.Category,
-		Max_paticipants: quest.Max_paticipants,
-		Deadline:        quest.Deadline,
-		StartTime:       quest.StartTime,
-		EndTime:         quest.EndTime,
-		Image:           quest.Image,
-		URL:             quest.URL,
-		CreatedAt:       quest.CreatedAt,
-		UpdatedAt:       quest.UpdatedAt,
+		MaxParticipants: quest.MaxParticipants,
+		Deadline:        nilIfZero(quest.Deadline),
+		StartTime:       nilIfZero(quest.StartTime),
+		EndTime:         nilIfZero(quest.EndTime),
+		// Image:           quest.Image,
+		URL:       quest.URL,
+		CreatedAt: quest.CreatedAt,
+		UpdatedAt: quest.UpdatedAt,
 	}
 	return resQuest, nil
 }
 
-func (qu *questUsecase) CreateQuest(quest model.Quest) (model.QuestResponse, error) {
+func (qu *questUsecase) CreateQuest(quest model.Quest) error {
 	if err := qu.qv.QuestValidate(quest); err != nil {
-		return model.QuestResponse{}, err
+		return err
 	}
 	if err := qu.qr.CreateQuest(&quest); err != nil {
-		return model.QuestResponse{}, err
+		return err
 	}
-
-	// Get user info
-	User := model.User{} //Userの空の構造体を作成
-	//* questのUserIDからUser情報を取得する！
-	if err := qu.ur.GetUserByID(&User, quest.UserId); err != nil {
-		return model.QuestResponse{}, err
-	}
-
-	resQuest := model.QuestResponse{
-		ID:              quest.ID,
-		Title:           quest.Title,
-		Description:     quest.Description,
-		Category:        quest.Category,
-		Max_paticipants: quest.Max_paticipants,
-		Deadline:        quest.Deadline,
-		StartTime:       quest.StartTime,
-		EndTime:         quest.EndTime,
-		Image:           quest.Image,
-		URL:             quest.URL,
-		CreatedAt:       quest.CreatedAt,
-		UpdatedAt:       quest.UpdatedAt,
-		UserName:        User.UserName,
-		Participants:    []string{},
-	}
-	return resQuest, nil
+	return nil
 }
 
-func (qu *questUsecase) UpdateQuest(quest model.Quest, userId uint, questId uint) (model.QuestResponse, error) {
+func (qu *questUsecase) UpdateQuest(quest model.Quest, userId uint, questId uint) error {
 	if err := qu.qv.QuestValidate(quest); err != nil {
-		return model.QuestResponse{}, err
+		return err
 	}
 	if err := qu.qr.UpdateQuest(&quest, userId, questId); err != nil {
-		return model.QuestResponse{}, err
-	} //questのアドレスが指すメモリのクエストが更新後の値に書き換わっている
-	resQuest := model.QuestResponse{ //QuestResponseの構造体を作成
-		ID:              quest.ID,
-		Title:           quest.Title,
-		Description:     quest.Description,
-		Category:        quest.Category,
-		Max_paticipants: quest.Max_paticipants,
-		Deadline:        quest.Deadline,
-		StartTime:       quest.StartTime,
-		EndTime:         quest.EndTime,
-		Image:           quest.Image,
-		URL:             quest.URL,
-		CreatedAt:       quest.CreatedAt,
-		UpdatedAt:       quest.UpdatedAt,
+		return err
 	}
-	return resQuest, nil
+	return nil
 }
 
 func (qu *questUsecase) DeleteQuest(userId uint, questId uint) error {

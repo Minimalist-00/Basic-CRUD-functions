@@ -83,11 +83,11 @@ func (qc *questController) CreateQuest(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, err.Error())
 	}
 	quest.UserId = uint(userId.(float64))
-	questRes, err := qc.qu.CreateQuest(quest)
+	err := qc.qu.CreateQuest(quest) // 返り値を無視する
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, err.Error())
 	}
-	return c.JSON(http.StatusCreated, questRes)
+	return c.NoContent(http.StatusCreated) // 201 Created ステータスのみを返す
 }
 
 func (qc *questController) UpdateQuest(c echo.Context) error {
@@ -101,11 +101,11 @@ func (qc *questController) UpdateQuest(c echo.Context) error {
 	if err := c.Bind(&quest); err != nil {
 		return c.JSON(http.StatusBadRequest, err.Error())
 	}
-	questRes, err := qc.qu.UpdateQuest(quest, uint(userId.(float64)), uint(questId))
+	err := qc.qu.UpdateQuest(quest, uint(userId.(float64)), uint(questId))
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, err.Error())
 	}
-	return c.JSON(http.StatusOK, questRes)
+	return c.NoContent(http.StatusNoContent)
 }
 
 /*
@@ -137,7 +137,7 @@ func (qc *questController) JoinQuest(c echo.Context) error {
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, err.Error())
 	}
-	return c.JSON(http.StatusOK, "クエストの参加が確定しました！")
+	return c.NoContent(http.StatusNoContent)
 }
 
 func (qc *questController) CancelQuest(c echo.Context) error {
