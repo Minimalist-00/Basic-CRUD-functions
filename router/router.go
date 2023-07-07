@@ -34,8 +34,8 @@ func NewRouter(uc controller.IUserController, qc controller.IQuestController) *e
 		CookiePath:     "/",
 		CookieDomain:   os.Getenv("API_DOMAIN"),
 		CookieHTTPOnly: true,
-		// CookieSameSite: http.SameSiteNoneMode, //TODO: フロントエンドとの通信にはSameSiteNoneModeを使う
-		CookieSameSite: http.SameSiteDefaultMode, //TODO: Postmanでのテスト用
+		CookieSameSite: http.SameSiteNoneMode, //TODO: フロントエンドとの通信にはSameSiteNoneModeを使う
+		// CookieSameSite: http.SameSiteDefaultMode, //TODO: Postmanでのテスト用
 		// CookieMaxAge:   60, // csrfトークンの有効期限（秒）
 	}))
 

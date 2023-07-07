@@ -63,6 +63,7 @@ func (uu *userUsecase) Login(user model.User) (string, error) {
 	if err != nil {
 		return "", err
 	}
+	// JWTトークンの作成
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{ //JWTの生成
 		"user_id": storedUser.ID,                             //ユーザーIDの設定
 		"exp":     time.Now().Add(time.Hour * 24 * 1).Unix(), //TODO: 有効期限の設定
