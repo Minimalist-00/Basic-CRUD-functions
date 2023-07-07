@@ -13,7 +13,8 @@ import (
 
 type IQuestRepository interface {
 	GetAllQuestsFromDB(quests *[]model.Quest) error
-	GetUserQuestsFromDB(quests *[]model.Quest, userId uint) error //全クエストを配列に格納する
+	GetUserQuestsFromDB(quests *[]model.Quest, userId uint) error   //全クエストを配列に格納する
+	GetJoinedQuestsFromDB(quests *[]model.Quest, userId uint) error //全クエストを配列に格納する
 	GetQuestById(quest *model.Quest, UserId uint, QuestId uint) error
 	CreateQuest(quest *model.Quest) error
 	UpdateQuest(quest *model.Quest, UserId uint, QuestId uint) error
@@ -43,6 +44,19 @@ func (qr *questRepository) GetUserQuestsFromDB(quests *[]model.Quest, userId uin
 	// クエスト一覧の中から、引数で渡されたuserIdと一致するクエスト一覧を取得する
 	// UserテーブルのUserIdを参照 / created_atでソート / クエスト一覧をquestsに格納
 	if err := qr.db.Joins("User").Where("user_id=?", userId).Order("created_at DESC").Find(quests).Error; err != nil {
+		return err
+	}
+	return nil
+}
+
+func (qr *questRepository) GetJoinedQuestsFromDB(quests *[]model.Quest, userId uint) error {
+	// Participantsテーブルを結合｜ユーザーIDの一致するレコードを取得｜関連するエンティティを取得
+	if err := qr.db.Joins("JOIN quest_participants ON quests.id = quest_participants.quest_id").
+		Where("quest_participants.user_id = ?", userId).
+		Preload("User").
+		Preload("Participants.User").
+		Order("start_time DESC").
+		Find(quests).Error; err != nil {
 		return err
 	}
 	return nil

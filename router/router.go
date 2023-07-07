@@ -69,7 +69,7 @@ func NewRouter(uc controller.IUserController, qc controller.IQuestController) *e
 
 	q.POST("/join/:questId", qc.JoinQuest) // クエストの参加
 	q.DELETE("/cancel/:questId", qc.CancelQuest)
-	q.GET("/created", qc.GetUserQuests) // ユーザーが作成したクエスト一覧
-	// q.GET("/joined", qc.GetJoinedQuests) // ユーザーが参加したクエスト一覧
+	q.GET("/created", qc.GetUserQuests)  // ユーザーが作成したクエスト一覧
+	q.GET("/joined", qc.GetJoinedQuests) // ユーザーが参加したクエスト一覧
 	return e
 }

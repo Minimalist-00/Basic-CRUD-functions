@@ -12,6 +12,7 @@ import (
 type IQuestUsecase interface {
 	GetAllQuests() ([]model.QuestResponse, error)
 	GetUserQuests(userId uint) ([]model.QuestResponse, error)
+	GetJoinedQuests(userId uint) ([]model.QuestResponse, error)
 	GetQuestById(userId uint, questId uint) (model.QuestResponse, error)
 	CreateQuest(quest model.Quest) error
 	UpdateQuest(quest model.Quest, userId uint, questId uint) error
@@ -91,11 +92,51 @@ func (qu *questUsecase) GetUserQuests(userId uint) ([]model.QuestResponse, error
 			StartTime:       nilIfZero(quest.StartTime),
 			EndTime:         nilIfZero(quest.EndTime),
 			// Image:           quest.Image,
-			URL:       quest.URL,
-			CreatedAt: quest.CreatedAt,
-			UpdatedAt: quest.UpdatedAt,
+			URL:          quest.URL,
+			CreatedAt:    quest.CreatedAt,
+			UpdatedAt:    quest.UpdatedAt,
+			UserName:     quest.User.UserName,
+			Participants: make([]string, 0, len(quest.Participants)),
+		}
+
+		//* クエスト参加者情報から名前だけ取り出して配列に格納
+		for _, p := range quest.Participants {
+			res.Participants = append(res.Participants, p.User.UserName)
 		}
 		resQuests = append(resQuests, res) //resQuestsにmodel.QuestResponseを追加
+	}
+	return resQuests, nil
+}
+
+func (qu *questUsecase) GetJoinedQuests(userId uint) ([]model.QuestResponse, error) {
+	quests := []model.Quest{}
+	if err := qu.qr.GetJoinedQuestsFromDB(&quests, userId); err != nil {
+		return nil, err
+	}
+	resQuests := []model.QuestResponse{}
+	for _, quest := range quests {
+		res := model.QuestResponse{
+			ID:              quest.ID,
+			Title:           quest.Title,
+			Description:     quest.Description,
+			Category:        quest.Category,
+			MaxParticipants: quest.MaxParticipants,
+			Deadline:        nilIfZero(quest.Deadline),
+			StartTime:       nilIfZero(quest.StartTime),
+			EndTime:         nilIfZero(quest.EndTime),
+			// Image:           quest.Image,
+			URL:          quest.URL,
+			CreatedAt:    quest.CreatedAt,
+			UpdatedAt:    quest.UpdatedAt,
+			UserName:     quest.User.UserName,
+			Participants: make([]string, 0, len(quest.Participants)),
+		}
+
+		//* クエスト参加者情報から名前だけ取り出して配列に格納
+		for _, p := range quest.Participants {
+			res.Participants = append(res.Participants, p.User.UserName)
+		}
+		resQuests = append(resQuests, res)
 	}
 	return resQuests, nil
 }
