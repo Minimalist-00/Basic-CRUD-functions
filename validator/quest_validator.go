@@ -21,7 +21,7 @@ func (qv *questValidator) QuestValidate(quest model.Quest) error {
 		validation.Field( //検証したいフィールドを指定
 			&quest.Title,
 			validation.Required.Error("タイトルを入力してください"),
-			validation.RuneLength(1, 10).Error("タイトルは10文字以内で入力してください"),
+			validation.RuneLength(1, 20).Error("タイトルは20文字以内で入力してください"),
 		),
 	)
 }
