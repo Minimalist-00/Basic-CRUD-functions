@@ -19,6 +19,7 @@ type IUserController interface {
 	LogOut(c echo.Context) error
 	CsrfToken(c echo.Context) error
 	GetUserName(c echo.Context) error
+	GetUserInfo(c echo.Context) error
 }
 
 type userController struct {
@@ -99,4 +100,23 @@ func (uc *userController) GetUserName(c echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, err.Error())
 	}
 	return c.JSON(http.StatusOK, username) //* ここでUserNameを取得してJSON形式で返す！
+}
+
+func (uc *userController) GetUserInfo(c echo.Context) error {
+	// JWTのclaimsからユーザーIDを取得
+	user := c.Get("user").(*jwt.Token) // jwtをデコードした内容を取得
+	claims := user.Claims.(jwt.MapClaims)
+	userId := uint(claims["user_id"].(float64)) // float64をuintにキャスト
+
+	// ユーザーIDを元にユーザー名を取得
+	userRes, err := uc.uu.GetUserInfo(userId)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, err.Error())
+	}
+	response := map[string]interface{}{
+		"email":     userRes.Email,
+		"user_name": userRes.UserName,
+	}
+
+	return c.JSON(http.StatusOK, response) //* ここでUserNameを取得してJSON形式で返す！
 }

@@ -52,6 +52,7 @@ func NewRouter(uc controller.IUserController, qc controller.IQuestController) *e
 		TokenLookup: "cookie:token",
 	}))
 	u.GET("/userName", uc.GetUserName)
+	u.GET("/userInfo", uc.GetUserInfo)
 
 	//* ミドルウェアの設定
 	q := e.Group("/quests")                  // クエスト関係のエンドポイントのグループ化
