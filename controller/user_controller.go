@@ -5,6 +5,7 @@ package controller
 import (
 	"bulletin-board-rest-api/model"
 	"bulletin-board-rest-api/usecase"
+	"log"
 	"net/http"
 	"os"
 	"time"
@@ -53,6 +54,9 @@ func (uc *userController) LogIn(c echo.Context) error {
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, err.Error())
 	}
+	log.Println("Generated token: ", tokenString)
+	log.Println("API_DOMAIN: ", os.Getenv("API_DOMAIN"))
+
 	// Cookieの設定
 	cookie := new(http.Cookie)
 	cookie.Name = "token"
