@@ -24,7 +24,9 @@ func NewRouter(uc controller.IUserController, qc controller.IQuestController) *e
 	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
 		AllowOrigins: []string{"http://localhost:3000", os.Getenv("FE_URL")}, // フロントエンドのURLを許可
 		AllowHeaders: []string{echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAccept,
-			echo.HeaderAccessControlAllowHeaders, echo.HeaderXCSRFToken},
+			echo.HeaderAccessControlAllowHeaders, echo.HeaderXCSRFToken,
+			echo.HeaderAccessControlAllowCredentials, echo.HeaderAccessControlAllowOrigin,
+		},
 		AllowMethods:     []string{"GET", "PUT", "POST", "DELETE"},
 		AllowCredentials: true,
 	}))
