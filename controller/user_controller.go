@@ -8,7 +8,6 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"time"
 
 	"github.com/golang-jwt/jwt/v4"
 	"github.com/labstack/echo/v4"
@@ -18,7 +17,6 @@ type IUserController interface {
 	SignUp(c echo.Context) error
 	LogIn(c echo.Context) error
 	LogOut(c echo.Context) error
-	CsrfToken(c echo.Context) error
 	GetUserName(c echo.Context) error
 	GetUserInfo(c echo.Context) error
 }
@@ -50,46 +48,21 @@ func (uc *userController) LogIn(c echo.Context) error {
 	if err := c.Bind(&user); err != nil {
 		return c.JSON(http.StatusBadRequest, err.Error())
 	}
-	tokenString, err := uc.uu.Login(user) //usecaseのLoginメソッドを呼び出し（JWTtokenが入る）
+	jwtToken, err := uc.uu.Login(user) //usecaseのLoginメソッドを呼び出し（JWTtokenが入る）
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, err.Error())
 	}
-	log.Println("Generated token: ", tokenString)
+	log.Println("Generated token: ", jwtToken)
 	log.Println("API_DOMAIN: ", os.Getenv("API_DOMAIN"))
 
-	// Cookieの設定
-	cookie := new(http.Cookie)
-	cookie.Name = "token"
-	cookie.Value = tokenString
-	cookie.Expires = time.Now().Add(time.Hour * 24 * 1) //TODO: 有効期限
-	cookie.Path = "/"
-	// cookie.Domain = os.Getenv("API_DOMAIN")
-	cookie.Secure = true //TODO: 本番環境:ture ｜ postman test:false
-	cookie.HttpOnly = true
-	cookie.SameSite = http.SameSiteNoneMode
-	c.SetCookie(cookie) //*作成したCookieをセット
-	return c.NoContent(http.StatusOK)
+	// JSONとしてJWTトークンを返す
+	return c.JSON(http.StatusOK, echo.Map{
+		"token": jwtToken,
+	})
 }
 
 func (uc *userController) LogOut(c echo.Context) error {
-	cookie := new(http.Cookie)
-	cookie.Name = "token"
-	cookie.Value = ""
-	cookie.Expires = time.Now()
-	cookie.Path = "/"
-	// cookie.Domain = os.Getenv("API_DOMAIN")
-	cookie.Secure = true //TODO: 本番環境:ture ｜ postman test:false
-	cookie.HttpOnly = true
-	cookie.SameSite = http.SameSiteNoneMode
-	c.SetCookie(cookie)
 	return c.NoContent(http.StatusOK)
-}
-
-func (uc *userController) CsrfToken(c echo.Context) error {
-	token := c.Get("csrf").(string)
-	return c.JSON(http.StatusOK, echo.Map{
-		"csrf_token": token,
-	})
 }
 
 func (uc *userController) GetUserName(c echo.Context) error {
