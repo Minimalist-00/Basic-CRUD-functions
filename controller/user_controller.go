@@ -5,9 +5,7 @@ package controller
 import (
 	"bulletin-board-rest-api/model"
 	"bulletin-board-rest-api/usecase"
-	"log"
 	"net/http"
-	"os"
 
 	"github.com/golang-jwt/jwt/v4"
 	"github.com/labstack/echo/v4"
@@ -52,8 +50,6 @@ func (uc *userController) LogIn(c echo.Context) error {
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, err.Error())
 	}
-	log.Println("Generated token: ", jwtToken)
-	log.Println("API_DOMAIN: ", os.Getenv("API_DOMAIN"))
 
 	// JSONとしてJWTトークンを返す
 	return c.JSON(http.StatusOK, echo.Map{
