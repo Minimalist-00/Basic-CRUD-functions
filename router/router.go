@@ -31,8 +31,8 @@ func NewRouter(uc controller.IUserController, qc controller.IQuestController) *e
 
 	//* CSRFのミドルウェアの設定
 	e.Use(middleware.CSRFWithConfig(middleware.CSRFConfig{
-		CookiePath:     "/",
-		CookieDomain:   os.Getenv("API_DOMAIN"),
+		CookiePath: "/",
+		// CookieDomain:   os.Getenv("API_DOMAIN"),
 		CookieHTTPOnly: true,
 		CookieSameSite: http.SameSiteNoneMode, //TODO: フロントエンドとの通信にはSameSiteNoneModeを使う
 		// CookieSameSite: http.SameSiteDefaultMode, //TODO: Postmanでのテスト用
