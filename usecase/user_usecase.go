@@ -67,7 +67,7 @@ func (uu *userUsecase) Login(user model.User) (string, error) {
 	// JWTトークンの作成
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{ //JWTの生成
 		"user_id": storedUser.ID,                             //ユーザーIDの設定
-		"exp":     time.Now().Add(time.Hour * 24 * 1).Unix(), //TODO: 有効期限の設定
+		"exp":     time.Now().Add(time.Hour * 24 * 7).Unix(), //TODO: 有効期限の設定
 	})
 	tokenString, err := token.SignedString([]byte(os.Getenv("SECRET"))) //著名済みの文字列を生成 <- トークンとして使うことで、信頼性↑
 	if err != nil {
