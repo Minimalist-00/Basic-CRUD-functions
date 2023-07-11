@@ -147,6 +147,7 @@ func (qu *questUsecase) GetQuestById(userId uint, questId uint) (model.EditQuest
 		return model.EditQuestResponse{}, err
 	}
 	resQuest := model.EditQuestResponse{ // QuestResponseのインスタンスを作成
+		ID:              quest.ID,
 		Title:           quest.Title,
 		Description:     quest.Description,
 		Category:        quest.Category,
