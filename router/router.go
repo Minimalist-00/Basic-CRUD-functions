@@ -37,7 +37,7 @@ func NewRouter(uc controller.IUserController, qc controller.IQuestController) *e
 	u := e.Group("/users")
 	u.Use(echojwt.WithConfig(echojwt.Config{
 		SigningKey:  []byte(os.Getenv("SECRET")),
-		TokenLookup: "header:Authorization", //TODO: jsonでcsrfをもらう or headerから取得
+		TokenLookup: "header:Authorization", // headerからjwtトークンを取得
 	}))
 	u.GET("/userName", uc.GetUserName)
 	u.GET("/userInfo", uc.GetUserInfo)
@@ -46,7 +46,7 @@ func NewRouter(uc controller.IUserController, qc controller.IQuestController) *e
 	q := e.Group("/quests")                  // クエスト関係のエンドポイントのグループ化
 	q.Use(echojwt.WithConfig(echojwt.Config{ //エンドポイントにミドルウェアの追加
 		SigningKey:  []byte(os.Getenv("SECRET")), // 環境変数からシークレットキーを取得
-		TokenLookup: "header:Authorization",      //TODO: jsonでcsrfをもらう or headerから取得
+		TokenLookup: "header:Authorization",      // headerからjwtトークンを取得
 	}))
 
 	//* クエスト関係のエンドポイントの設定
