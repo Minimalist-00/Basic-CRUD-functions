@@ -79,7 +79,7 @@ func (qc *questController) GetQuestById(c echo.Context) error {
 	user := c.Get("user").(*jwt.Token)
 	claims := user.Claims.(jwt.MapClaims)
 	userId := claims["user_id"]
-	id := c.Param("questId")       // クエストIDを取得！
+	id := c.Param("questId")       // URLからクエストIDを取得！
 	questId, _ := strconv.Atoi(id) // string型 -> int型に変換
 	questRes, err := qc.qu.GetQuestById(uint(userId.(float64)), uint(questId))
 	if err != nil {

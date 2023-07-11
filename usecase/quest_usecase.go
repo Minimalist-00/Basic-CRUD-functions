@@ -147,7 +147,6 @@ func (qu *questUsecase) GetQuestById(userId uint, questId uint) (model.QuestResp
 		return model.QuestResponse{}, err
 	}
 	resQuest := model.QuestResponse{ // QuestResponseのインスタンスを作成
-		ID:              quest.ID,
 		Title:           quest.Title,
 		Description:     quest.Description,
 		Category:        quest.Category,
@@ -156,9 +155,7 @@ func (qu *questUsecase) GetQuestById(userId uint, questId uint) (model.QuestResp
 		StartTime:       nilIfZero(quest.StartTime),
 		EndTime:         nilIfZero(quest.EndTime),
 		// Image:           quest.Image,
-		URL:       quest.URL,
-		CreatedAt: quest.CreatedAt,
-		UpdatedAt: quest.UpdatedAt,
+		URL: quest.URL,
 	}
 	return resQuest, nil
 }
