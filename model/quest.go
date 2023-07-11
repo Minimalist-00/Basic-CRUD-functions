@@ -39,3 +39,15 @@ type QuestResponse struct {
 	UserName        string     `json:"user_name"`    // 作成者の名前
 	Participants    []string   `json:"participants"` // 参加者の名前のリスト
 }
+
+type EditQuestResponse struct {
+	Title           string     `json:"title" `
+	Description     string     `json:"description"`
+	Category        string     `json:"category" `
+	MaxParticipants uint       `json:"max_participants" `
+	Deadline        *time.Time `json:"deadline" `
+	StartTime       *time.Time `json:"start_time"`
+	EndTime         *time.Time `json:"end_time"`
+	Image           []byte     `json:"image"` // 画像をバイナリデータで保存
+	URL             string     `json:"url"`
+}

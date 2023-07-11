@@ -13,7 +13,7 @@ type IQuestUsecase interface {
 	GetAllQuests() ([]model.QuestResponse, error)
 	GetUserQuests(userId uint) ([]model.QuestResponse, error)
 	GetJoinedQuests(userId uint) ([]model.QuestResponse, error)
-	GetQuestById(userId uint, questId uint) (model.QuestResponse, error)
+	GetQuestById(userId uint, questId uint) (model.EditQuestResponse, error)
 	CreateQuest(quest model.Quest) error
 	UpdateQuest(quest model.Quest, userId uint, questId uint) error
 	DeleteQuest(userId uint, questId uint) error
@@ -141,12 +141,12 @@ func (qu *questUsecase) GetJoinedQuests(userId uint) ([]model.QuestResponse, err
 	return resQuests, nil
 }
 
-func (qu *questUsecase) GetQuestById(userId uint, questId uint) (model.QuestResponse, error) {
+func (qu *questUsecase) GetQuestById(userId uint, questId uint) (model.EditQuestResponse, error) {
 	quest := model.Quest{}                                              //Questの空の構造体を作成
 	if err := qu.qr.GetQuestById(&quest, userId, questId); err != nil { //空の構造体とuser・questのIDを渡す
-		return model.QuestResponse{}, err
+		return model.EditQuestResponse{}, err
 	}
-	resQuest := model.QuestResponse{ // QuestResponseのインスタンスを作成
+	resQuest := model.EditQuestResponse{ // QuestResponseのインスタンスを作成
 		Title:           quest.Title,
 		Description:     quest.Description,
 		Category:        quest.Category,

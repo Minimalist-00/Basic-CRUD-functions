@@ -43,7 +43,7 @@ func (qr *questRepository) GetAllQuestsFromDB(quests *[]model.Quest) error {
 func (qr *questRepository) GetUserQuestsFromDB(quests *[]model.Quest, userId uint) error {
 	// クエスト一覧の中から、引数で渡されたuserIdと一致するクエスト一覧を取得する
 	// UserテーブルのUserIdを参照 / created_atでソート / クエスト一覧をquestsに格納
-	if err := qr.db.Joins("User").Where("user_id=?", userId).Order("created_at DESC").Find(quests).Error; err != nil {
+	if err := qr.db.Joins("User").Where("user_id=?", userId).Preload("Participants.User").Order("created_at DESC").Find(quests).Error; err != nil {
 		return err
 	}
 	return nil
@@ -86,8 +86,8 @@ func (qr *questRepository) UpdateQuest(quest *model.Quest, userId uint, questId 
 		"deadline":         quest.Deadline,
 		"start_time":       quest.StartTime,
 		"end_time":         quest.EndTime,
-		"image":            quest.Image,
 		"url":              quest.URL,
+		// "image":            quest.Image,
 	})
 	if result.Error != nil {
 		return result.Error
