@@ -41,6 +41,7 @@ type QuestResponse struct {
 }
 
 type EditQuestResponse struct {
+	ID              uint       `json:"id" gorm:"primaryKey"`
 	Title           string     `json:"title" `
 	Description     string     `json:"description"`
 	Category        string     `json:"category" `

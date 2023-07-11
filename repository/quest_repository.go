@@ -79,6 +79,7 @@ func (qr *questRepository) CreateQuest(quest *model.Quest) error {
 
 func (qr *questRepository) UpdateQuest(quest *model.Quest, userId uint, questId uint) error {
 	result := qr.db.Model(quest).Clauses(clause.Returning{}).Where("id=? AND user_id=?", questId, userId).Updates(map[string]interface{}{
+		"id":               quest.ID,
 		"title":            quest.Title,
 		"description":      quest.Description,
 		"category":         quest.Category,
