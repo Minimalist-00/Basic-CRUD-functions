@@ -17,6 +17,7 @@ type IUserController interface {
 	LogOut(c echo.Context) error
 	GetUserName(c echo.Context) error
 	GetUserInfo(c echo.Context) error
+	UpdateUserName(c echo.Context) error
 }
 
 type userController struct {
@@ -92,4 +93,21 @@ func (uc *userController) GetUserInfo(c echo.Context) error {
 	}
 
 	return c.JSON(http.StatusOK, response) //* ここでUserNameを取得してJSON形式で返す！
+}
+
+func (uc *userController) UpdateUserName(c echo.Context) error {
+	user := c.Get("user").(*jwt.Token) // jwtをデコードした内容を取得
+	claims := user.Claims.(jwt.MapClaims)
+	userId := uint(claims["user_id"].(float64))
+
+	req := model.UpdateUserNameRequest{}
+	if err := c.Bind(&req); err != nil {
+		return c.JSON(http.StatusBadRequest, err.Error())
+	}
+
+	err := uc.uu.UpdateUserName(userId, req.UserName)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, err.Error())
+	}
+	return c.NoContent(http.StatusOK)
 }

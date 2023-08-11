@@ -19,3 +19,8 @@ type UserResponse struct {
 	Email    string `json:"email" gorm:"unique"`
 	UserName string `json:"user_name" gorm:"unique"`
 }
+
+// リクエストを格納する構造体
+type UpdateUserNameRequest struct {
+	UserName string `json:"user_name"`
+}
