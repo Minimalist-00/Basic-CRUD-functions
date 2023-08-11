@@ -9,6 +9,7 @@ package router
 
 import (
 	"bulletin-board-rest-api/controller"
+	"net/http"
 	"os"
 
 	echojwt "github.com/labstack/echo-jwt/v4"
@@ -18,6 +19,10 @@ import (
 
 func NewRouter(uc controller.IUserController, qc controller.IQuestController) *echo.Echo {
 	e := echo.New()
+
+	e.GET("/", func(c echo.Context) error {
+		return c.String(http.StatusOK, "Hello, World!")
+	})
 
 	//* CORSのミドルウェアの設定
 	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
