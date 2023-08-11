@@ -55,7 +55,7 @@ func (ur *userRepository) GetUserByID(user *model.User, userId uint) error {
 }
 
 func (ur *userRepository) UpdateUserName(userId uint, newUserName string) error {
-	err := ur.db.Model(&model.User{}).Where("id = ?", userId).Update("name", newUserName).Error
+	err := ur.db.Model(&model.User{}).Where("id = ?", userId).Update("user_name", newUserName).Error
 	if err != nil {
 		return err
 	} else {

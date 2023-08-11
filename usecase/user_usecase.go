@@ -18,6 +18,7 @@ type IUserUsecase interface {
 	Login(user model.User) (string, error) //JWTを返すためにstring型
 	GetUserName(userId uint) (string, error)
 	GetUserInfo(userId uint) (model.UserResponse, error)
+	UpdateUserName(userId uint, userName string) error
 }
 
 type userUsecase struct {
@@ -95,4 +96,11 @@ func (uu *userUsecase) GetUserInfo(userId uint) (model.UserResponse, error) {
 		Email:    User.Email,
 	}
 	return resUser, nil
+}
+
+func (uu *userUsecase) UpdateUserName(userId uint, userName string) error {
+	if err := uu.ur.UpdateUserName(userId, userName); err != nil {
+		return err
+	}
+	return nil
 }
