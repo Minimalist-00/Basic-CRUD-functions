@@ -100,11 +100,18 @@ func (qr *questRepository) UpdateQuest(quest *model.Quest, userId uint, questId 
 }
 
 func (qr *questRepository) DeleteQuest(userId uint, questId uint) error {
-	result := qr.db.Where("id=? AND user_id=?", questId, userId).Delete(&model.Quest{})
-	if result.Error != nil {
-		return result.Error
+	// まず、クエスト参加者テーブルの該当レコードを削除
+	participantDeleteResult := qr.db.Where("quest_id = ?", questId).Delete(&model.QuestParticipant{})
+	if participantDeleteResult.Error != nil {
+		return participantDeleteResult.Error
 	}
-	if result.RowsAffected < 1 {
+
+	// 次に、クエストテーブルのレコードを削除
+	questDeleteResult := qr.db.Where("id=? AND user_id=?", questId, userId).Delete(&model.Quest{})
+	if questDeleteResult.Error != nil {
+		return questDeleteResult.Error
+	}
+	if questDeleteResult.RowsAffected < 1 {
 		return fmt.Errorf("object does not exist")
 	}
 	return nil
@@ -113,6 +120,13 @@ func (qr *questRepository) DeleteQuest(userId uint, questId uint) error {
 func (qr *questRepository) JoinQuest(userId uint, questId uint) error {
 	now := time.Now()
 	jst := time.FixedZone("Asia/Tokyo", 9*60*60)
+
+	// 既にユーザーがクエストに参加しているか確認
+	var count int64
+	qr.db.Model(&model.QuestParticipant{}).Where("user_id = ? AND quest_id = ?", userId, questId).Count(&count)
+	if count > 0 {
+		return nil // 既に参加している場合は何もせずに終了
+	}
 
 	participant := &model.QuestParticipant{
 		JoinedAt: now.In(jst), // 現在時刻を取得
