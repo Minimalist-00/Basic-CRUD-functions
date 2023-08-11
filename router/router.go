@@ -41,6 +41,7 @@ func NewRouter(uc controller.IUserController, qc controller.IQuestController) *e
 	}))
 	u.GET("/userName", uc.GetUserName)
 	u.GET("/userInfo", uc.GetUserInfo)
+	// u.PUT("/userName", uc.UpdateUserName)
 
 	//* ミドルウェアの設定
 	q := e.Group("/quests")                  // クエスト関係のエンドポイントのグループ化
